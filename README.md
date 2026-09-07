@@ -1,23 +1,16 @@
 # SaaSFlow 🚀
 
-A full-stack Multi-Tenant SaaS Application built with the MERN stack.
+A production-oriented Multi-Tenant SaaS Application built with the MERN Stack.
 
-SaaSFlow is designed to manage organizations, users, projects, and tasks with secure authentication, role-based access control, and tenant-level data isolation.
+SaaSFlow allows multiple organizations (tenants) to securely use the same application while keeping their users, projects, and tasks isolated from other organizations.
 
 ---
 
-## 📌 Overview
+## 📌 Project Overview
 
-SaaSFlow is a Multi-Tenant SaaS platform where multiple organizations can use the same application while keeping their data completely isolated from other organizations.
+SaaSFlow is a full-stack Multi-Tenant SaaS application designed to demonstrate real-world SaaS architecture, authentication, authorization, tenant isolation, role-based access control, and organization-level data management.
 
-Each organization has its own:
-
-- Users
-- Projects
-- Tasks
-- Dashboard statistics
-
-The application implements authentication, authorization, role-based permissions, and tenant isolation at the backend level.
+Each organization has its own users, projects, and tasks, while the backend ensures that data from one organization cannot be accessed by another organization.
 
 ---
 
@@ -27,43 +20,57 @@ The application implements authentication, authorization, role-based permissions
 
 - User Registration
 - User Login
-- JWT-based Authentication
+- JWT Authentication
 - Password Hashing with bcrypt
 - Protected Routes
 - Automatic Authentication Handling
-- Logout functionality
 
 ### 🏢 Multi-Tenancy
 
-- Multiple organizations supported
-- Organization-based data isolation
-- Users belong to a specific organization
-- Projects are organization-specific
-- Tasks are organization-specific
-- Cross-tenant data access is prevented
+- Organization-based architecture
+- Tenant identification through authenticated users
+- Organization-level data isolation
+- Secure tenant-scoped database queries
 
 ### 👥 Role-Based Access Control
 
 SaaSFlow supports three roles:
 
-| Role | Permissions |
-|------|-------------|
-| Owner | Full organization management |
-| Admin | Manage users, projects and tasks |
-| Member | View organization data |
+- **Owner**
+- **Admin**
+- **Member**
 
-Role-based restrictions are implemented on both frontend and backend.
+#### Owner
+
+- Full organization access
+- Create, update and delete users
+- Create, update and delete projects
+- Create, update and delete tasks
+
+#### Admin
+
+- Manage users
+- Create and update projects
+- Create and update tasks
+- Restricted from owner-level actions
+
+#### Member
+
+- View organization data
+- View users
+- View projects
+- View tasks
+- Cannot perform management operations
 
 ### 👤 User Management
 
-- View organization users
 - Create users
+- View users
 - Update users
 - Delete users
 - Role management
 - Owner protection
-- Email validation
-- Password validation
+- Organization-scoped users
 
 ### 📁 Project Management
 
@@ -84,64 +91,63 @@ Role-based restrictions are implemented on both frontend and backend.
 - Assign tasks to projects
 - Task status management
 - Task priority management
-- Due date support
+- Due dates
 
 ### 📊 Dashboard
 
-The dashboard provides organization-level statistics including:
-
-- Total Users
-- Total Projects
-- Total Tasks
-- Tasks by Status
-- Tasks by Priority
+- Total users
+- Total projects
+- Total tasks
+- Tasks by status
+- Tasks by priority
 - Organization information
+- Responsive dashboard
 
 ### 🛡️ Security
 
-- JWT authentication
+- JWT-based authentication
 - Password hashing
+- Role-based authorization
 - Tenant middleware
-- Role middleware
-- Protected API routes
-- Organization-level database filtering
-- Input validation
+- Tenant-scoped queries
 - Centralized error handling
-- Unauthorized access protection
+- Input validation
+- Duplicate data handling
+- Unauthorized request protection
 
 ### 📱 Responsive UI
 
-- Desktop-friendly interface
-- Mobile responsive layout
-- Mobile navigation menu
+- Desktop layout
+- Tablet-friendly layout
+- Mobile navigation
 - Responsive dashboard
 - Responsive management pages
 
 ---
 
-## 🏗️ Architecture
+## 🏗️ System Architecture
 
 ```text
                     ┌─────────────────────┐
-                    │      Client         │
+                    │      Frontend       │
                     │   React + Vite      │
                     └──────────┬──────────┘
                                │
-                               │ HTTP / REST API
+                               │ REST API
                                ▼
                     ┌─────────────────────┐
-                    │      Server         │
+                    │       Backend       │
                     │ Node.js + Express   │
                     └──────────┬──────────┘
                                │
-              ┌────────────────┼────────────────┐
-              │                │                │
-              ▼                ▼                ▼
-        Authentication     Tenant Layer      RBAC Layer
-          JWT/Bcrypt       Organization       Roles
-                               │
+                ┌──────────────┼──────────────┐
+                │              │              │
+                ▼              ▼              ▼
+          Authentication   Tenant/RBAC    Controllers
+                │              │              │
+                └──────────────┼──────────────┘
                                ▼
                     ┌─────────────────────┐
                     │      MongoDB        │
-                    │      Database       │
+                    │    MongoDB Atlas    │
                     └─────────────────────┘
