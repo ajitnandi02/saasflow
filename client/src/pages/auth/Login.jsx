@@ -1,48 +1,21 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-
 import { useAuth } from "../../context/AuthContext.jsx";
 
-
-// ==========================================
-// LOGIN PAGE
-// ==========================================
-
 const Login = () => {
-
     const navigate = useNavigate();
-
     const { login } = useAuth();
-
-
-    // ======================================
-    // FORM STATE
-    // ======================================
 
     const [formData, setFormData] = useState({
         email: "",
         password: "",
     });
 
-
-    // ======================================
-    // UI STATE
-    // ======================================
-
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
-
-    // ======================================
-    // HANDLE INPUT
-    // ======================================
-
     const handleChange = (event) => {
-
-        const {
-            name,
-            value,
-        } = event.target;
+        const { name, value } = event.target;
 
         setFormData((previous) => ({
             ...previous,
@@ -52,154 +25,167 @@ const Login = () => {
         setError("");
     };
 
-
-    // ======================================
-    // HANDLE SUBMIT
-    // ======================================
-
     const handleSubmit = async (event) => {
-
         event.preventDefault();
-
         setError("");
 
-
-        // Basic validation
         if (
             !formData.email.trim() ||
             !formData.password
         ) {
-            setError(
-                "Email and password are required"
-            );
-
+            setError("Email and password are required");
             return;
         }
 
-
         try {
-
             setLoading(true);
-
 
             await login(
                 formData.email,
                 formData.password
             );
 
-
-            // Login successful
             navigate("/dashboard");
-
         } catch (error) {
-
             const message =
                 error.response?.data?.message ||
                 "Login failed. Please try again.";
 
             setError(message);
-
         } finally {
-
             setLoading(false);
         }
     };
 
-
-    // ======================================
-    // UI
-    // ======================================
-
     return (
-        <div>
+        <div className="auth-page">
 
-            <h1>
-                SaaSFlow Login
-            </h1>
+            {/* Background decoration */}
+            <div className="auth-glow auth-glow-one"></div>
+            <div className="auth-glow auth-glow-two"></div>
 
+            <div className="auth-container">
 
-            <form onSubmit={handleSubmit}>
+                {/* Brand */}
+                <div className="auth-brand">
+                    <div className="auth-logo">
+                        S
+                    </div>
 
-                {/* Email */}
+                    <span>SaaSFlow</span>
+                </div>
 
-                <div>
+                {/* Login Card */}
+                <div className="auth-card">
 
-                    <label htmlFor="email">
-                        Email
-                    </label>
+                    <div className="auth-header">
+                        <h1>
+                            Welcome back
+                        </h1>
 
-                    <input
-                        id="email"
-                        name="email"
-                        type="email"
-                        placeholder="Enter your email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        autoComplete="email"
-                    />
+                        <p>
+                            Sign in to continue to your workspace
+                        </p>
+                    </div>
+
+                    <form
+                        className="auth-form"
+                        onSubmit={handleSubmit}
+                    >
+
+                        {/* Email */}
+                        <div className="form-group">
+
+                            <label htmlFor="email">
+                                Email address
+                            </label>
+
+                            <input
+                                id="email"
+                                name="email"
+                                type="email"
+                                placeholder="you@example.com"
+                                value={formData.email}
+                                onChange={handleChange}
+                                autoComplete="email"
+                                disabled={loading}
+                            />
+
+                        </div>
+
+                        {/* Password */}
+                        <div className="form-group">
+
+                            <div className="password-label-row">
+
+                                <label htmlFor="password">
+                                    Password
+                                </label>
+
+                            </div>
+
+                            <input
+                                id="password"
+                                name="password"
+                                type="password"
+                                placeholder="Enter your password"
+                                value={formData.password}
+                                onChange={handleChange}
+                                autoComplete="current-password"
+                                disabled={loading}
+                            />
+
+                        </div>
+
+                        {/* Error */}
+                        {error && (
+                            <div className="auth-error">
+                                <span>!</span>
+                                <p>{error}</p>
+                            </div>
+                        )}
+
+                        {/* Login button */}
+                        <button
+                            type="submit"
+                            className="auth-button"
+                            disabled={loading}
+                        >
+                            {loading ? (
+                                <>
+                                    <span className="spinner"></span>
+                                    Logging in...
+                                </>
+                            ) : (
+                                "Sign in"
+                            )}
+                        </button>
+
+                    </form>
+
+                    {/* Register */}
+                    <div className="auth-footer">
+
+                        <span>
+                            Don't have an account?
+                        </span>
+
+                        <Link to="/register">
+                            Create an account
+                        </Link>
+
+                    </div>
 
                 </div>
 
+                {/* Bottom text */}
+                <p className="auth-security">
+                    Secure authentication powered by SaaSFlow
+                </p>
 
-                {/* Password */}
-
-                <div>
-
-                    <label htmlFor="password">
-                        Password
-                    </label>
-
-                    <input
-                        id="password"
-                        name="password"
-                        type="password"
-                        placeholder="Enter your password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        autoComplete="current-password"
-                    />
-
-                </div>
-
-
-                {/* Error */}
-
-                {error && (
-                    <p>
-                        {error}
-                    </p>
-                )}
-
-
-                {/* Submit */}
-
-                <button
-                    type="submit"
-                    disabled={loading}
-                >
-                    {loading
-                        ? "Logging in..."
-                        : "Login"}
-                </button>
-
-            </form>
-
-
-            {/* Register Link */}
-
-            <p>
-
-                Don't have an account?{" "}
-
-                <Link to="/register">
-                    Register
-                </Link>
-
-            </p>
-
+            </div>
         </div>
     );
 };
-
 
 export default Login;

@@ -186,3 +186,134 @@
         padding-right: 14px;
     }
 }
+
+/* ==========================================
+   NOTIFICATION SYSTEM
+========================================== */
+
+.notification-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.notification-button {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    background: #111827;
+    color: #f8fafc;
+    font-size: 18px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.notification-button:hover {
+    background: #1e293b;
+    border-color: #475569;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #0f172a;
+    border-radius: 999px;
+    background: #ef4444;
+    color: #ffffff;
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+
+/* ==========================================
+   MOBILE NOTIFICATIONS
+========================================== */
+
+.mobile-notification-section {
+    position: relative;
+    width: 100%;
+}
+
+.mobile-notification-button {
+    width: 100%;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    background: #111827;
+    color: #f8fafc;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.mobile-notification-button:hover {
+    background: #1e293b;
+}
+
+.mobile-notification-badge {
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: #ef4444;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+
+/* ==========================================
+   MOBILE PANEL OVERRIDE
+========================================== */
+
+@media (max-width: 768px) {
+    .mobile-notification-section .notification-panel {
+        position: fixed;
+        top: 70px;
+        left: 15px;
+        right: 15px;
+        width: auto;
+        max-width: none;
+        margin: 0;
+    }
+}
+
+
+/* ==========================================
+   SMALL MOBILE
+========================================== */
+
+@media (max-width: 480px) {
+    .mobile-notification-section .notification-panel {
+        top: 65px;
+        left: 10px;
+        right: 10px;
+    }
+
+    .notification-button {
+        width: 38px;
+        height: 38px;
+        font-size: 17px;
+    }
+}

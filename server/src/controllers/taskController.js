@@ -1,7 +1,8 @@
 import Task from "../models/Task.js";
 import Project from "../models/Project.js";
 import User from "../models/User.js";
-
+import createNotification from "../utils/notificationUtils.js";
+import createActivity from "../utils/activityUtils.js";
 
 // ==========================================
 // CREATE TASK
@@ -49,8 +50,10 @@ export const createTask = async (req, res, next) => {
         }
 
         // Validate assigned user
+        let assignedUser = null;
+
         if (assignedTo) {
-            const assignedUser = await User.findOne({
+            assignedUser = await User.findOne({
                 _id: assignedTo,
                 organizationId: req.organizationId,
             });
@@ -76,6 +79,38 @@ export const createTask = async (req, res, next) => {
             createdBy: req.user._id,
         });
 
+        // ==========================================
+        // ACTIVITY: TASK CREATED
+        // ==========================================
+
+        await createActivity({
+            organizationId: req.organizationId,
+            user: req.user._id,
+            action: "created",
+            entityType: "task",
+            entityId: task._id,
+            description: `Created task "${task.title}"`,
+        });
+
+        // ==========================================
+        // NOTIFICATION: TASK ASSIGNED
+        // ==========================================
+
+        if (
+            assignedUser &&
+            assignedUser._id.toString() !== req.user._id.toString()
+        ) {
+            await createNotification({
+                organizationId: req.organizationId,
+                recipient: assignedUser._id,
+                type: "task_assigned",
+                title: "New Task Assigned",
+                message: `You have been assigned a new task: "${task.title}"`,
+                relatedTask: task._id,
+                relatedProject: project._id,
+            });
+        }
+
         // Populate response
         const populatedTask = await Task.findById(task._id)
             .populate("projectId", "name description")
@@ -87,12 +122,10 @@ export const createTask = async (req, res, next) => {
             message: "Task created successfully",
             task: populatedTask,
         });
-
     } catch (error) {
         next(error);
     }
 };
-
 
 // ==========================================
 // GET ALL TASKS
@@ -113,12 +146,10 @@ export const getTasks = async (req, res, next) => {
             count: tasks.length,
             tasks,
         });
-
     } catch (error) {
         next(error);
     }
 };
-
 
 // ==========================================
 // GET SINGLE TASK
@@ -145,12 +176,10 @@ export const getTask = async (req, res, next) => {
             success: true,
             task,
         });
-
     } catch (error) {
         next(error);
     }
 };
-
 
 // ==========================================
 // UPDATE TASK
@@ -180,7 +209,20 @@ export const updateTask = async (req, res, next) => {
             });
         }
 
-        // Validate project when updating
+        // ==========================================
+        // STORE PREVIOUS VALUES
+        // ==========================================
+
+        const previousAssignedTo = task.assignedTo
+            ? task.assignedTo.toString()
+            : null;
+
+        const previousStatus = task.status;
+
+        // ==========================================
+        // VALIDATE PROJECT
+        // ==========================================
+
         if (projectId !== undefined) {
             const project = await Project.findOne({
                 _id: projectId,
@@ -197,17 +239,22 @@ export const updateTask = async (req, res, next) => {
             task.projectId = projectId;
         }
 
-        // Validate assigned user when updating
+        // ==========================================
+        // VALIDATE ASSIGNED USER
+        // ==========================================
+
+        let newAssignedUser = null;
+
         if (assignedTo !== undefined) {
             if (assignedTo === null || assignedTo === "") {
                 task.assignedTo = null;
             } else {
-                const assignedUser = await User.findOne({
+                newAssignedUser = await User.findOne({
                     _id: assignedTo,
                     organizationId: req.organizationId,
                 });
 
-                if (!assignedUser) {
+                if (!newAssignedUser) {
                     return res.status(404).json({
                         success: false,
                         message: "Assigned user not found in your organization",
@@ -218,7 +265,10 @@ export const updateTask = async (req, res, next) => {
             }
         }
 
-        // Validate title when updating
+        // ==========================================
+        // UPDATE TITLE
+        // ==========================================
+
         if (title !== undefined) {
             if (!title.trim()) {
                 return res.status(400).json({
@@ -230,29 +280,169 @@ export const updateTask = async (req, res, next) => {
             task.title = title.trim();
         }
 
-        // Update description
+        // ==========================================
+        // UPDATE DESCRIPTION
+        // ==========================================
+
         if (description !== undefined) {
             task.description = description.trim();
         }
 
-        // Update status
+        // ==========================================
+        // UPDATE STATUS
+        // ==========================================
+
         if (status !== undefined) {
             task.status = status;
         }
 
-        // Update priority
+        // ==========================================
+        // UPDATE PRIORITY
+        // ==========================================
+
         if (priority !== undefined) {
             task.priority = priority;
         }
 
-        // Update due date
+        // ==========================================
+        // UPDATE DUE DATE
+        // ==========================================
+
         if (dueDate !== undefined) {
             task.dueDate = dueDate || null;
         }
 
+        // ==========================================
+        // SAVE TASK
+        // ==========================================
+
         await task.save();
 
-        // Populate updated task
+        // ==========================================
+        // CHECK ASSIGNMENT CHANGE
+        // ==========================================
+
+        const currentAssignedTo = task.assignedTo
+            ? task.assignedTo.toString()
+            : null;
+
+        const assignmentChanged =
+            currentAssignedTo !== previousAssignedTo;
+
+        // ==========================================
+        // ACTIVITY: TASK UPDATED
+        // ==========================================
+
+        await createActivity({
+            organizationId: req.organizationId,
+            user: req.user._id,
+            action: "updated",
+            entityType: "task",
+            entityId: task._id,
+            description: `Updated task "${task.title}"`,
+        });
+
+        // ==========================================
+        // ACTIVITY: TASK ASSIGNED
+        // ==========================================
+
+        if (
+            assignmentChanged &&
+            currentAssignedTo &&
+            newAssignedUser
+        ) {
+            await createActivity({
+                organizationId: req.organizationId,
+                user: req.user._id,
+                action: "assigned",
+                entityType: "task",
+                entityId: task._id,
+                description: `Assigned task "${task.title}" to ${newAssignedUser.name}`,
+            });
+        }
+
+        // ==========================================
+        // ACTIVITY: TASK UNASSIGNED
+        // ==========================================
+
+        if (
+            assignmentChanged &&
+            !currentAssignedTo &&
+            previousAssignedTo
+        ) {
+            await createActivity({
+                organizationId: req.organizationId,
+                user: req.user._id,
+                action: "removed",
+                entityType: "task",
+                entityId: task._id,
+                description: `Removed assignment from task "${task.title}"`,
+            });
+        }
+
+        // ==========================================
+        // ACTIVITY: TASK STATUS CHANGED
+        // ==========================================
+
+        if (
+            status !== undefined &&
+            status !== previousStatus
+        ) {
+            await createActivity({
+                organizationId: req.organizationId,
+                user: req.user._id,
+                action: "status_changed",
+                entityType: "task",
+                entityId: task._id,
+                description: `Changed task "${task.title}" status from "${previousStatus}" to "${task.status}"`,
+            });
+        }
+
+        // ==========================================
+        // NOTIFICATION: NEW TASK ASSIGNMENT
+        // ==========================================
+
+        if (
+            assignmentChanged &&
+            newAssignedUser &&
+            newAssignedUser._id.toString() !== req.user._id.toString()
+        ) {
+            await createNotification({
+                organizationId: req.organizationId,
+                recipient: newAssignedUser._id,
+                type: "task_assigned",
+                title: "New Task Assigned",
+                message: `You have been assigned a new task: "${task.title}"`,
+                relatedTask: task._id,
+                relatedProject: task.projectId,
+            });
+        }
+
+        // ==========================================
+        // NOTIFICATION: TASK STATUS CHANGED
+        // ==========================================
+
+        if (
+            status !== undefined &&
+            status !== previousStatus &&
+            task.assignedTo &&
+            task.assignedTo.toString() !== req.user._id.toString()
+        ) {
+            await createNotification({
+                organizationId: req.organizationId,
+                recipient: task.assignedTo,
+                type: "task_updated",
+                title: "Task Status Updated",
+                message: `The status of "${task.title}" changed to "${task.status}".`,
+                relatedTask: task._id,
+                relatedProject: task.projectId,
+            });
+        }
+
+        // ==========================================
+        // POPULATE UPDATED TASK
+        // ==========================================
+
         const updatedTask = await Task.findById(task._id)
             .populate("projectId", "name")
             .populate("assignedTo", "name email role")
@@ -263,12 +453,10 @@ export const updateTask = async (req, res, next) => {
             message: "Task updated successfully",
             task: updatedTask,
         });
-
     } catch (error) {
         next(error);
     }
 };
-
 
 // ==========================================
 // DELETE TASK
@@ -288,13 +476,29 @@ export const deleteTask = async (req, res, next) => {
             });
         }
 
+        // Store values before deleting
+        const taskId = task._id;
+        const taskTitle = task.title;
+
         await task.deleteOne();
+
+        // ==========================================
+        // ACTIVITY: TASK DELETED
+        // ==========================================
+
+        await createActivity({
+            organizationId: req.organizationId,
+            user: req.user._id,
+            action: "deleted",
+            entityType: "task",
+            entityId: taskId,
+            description: `Deleted task "${taskTitle}"`,
+        });
 
         return res.status(200).json({
             success: true,
             message: "Task deleted successfully",
         });
-
     } catch (error) {
         next(error);
     }

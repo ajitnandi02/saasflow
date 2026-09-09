@@ -28,6 +28,15 @@ const Tasks = () => {
     const [error, setError] = useState("");
 
     // ==========================================
+    // SEARCH / FILTER / SORT STATE
+    // ==========================================
+
+    const [searchTerm, setSearchTerm] = useState("");
+    const [statusFilter, setStatusFilter] = useState("all");
+    const [priorityFilter, setPriorityFilter] = useState("all");
+    const [sortBy, setSortBy] = useState("newest");
+
+    // ==========================================
     // CREATE TASK STATE
     // ==========================================
 
@@ -135,6 +144,94 @@ const Tasks = () => {
 
         loadData();
     }, []);
+
+    // ==========================================
+    // FILTERED TASKS
+    // ==========================================
+
+    const filteredTasks = tasks
+        .filter((task) => {
+            const search = searchTerm.trim().toLowerCase();
+
+            const projectName =
+                task.projectId?.name ||
+                projects.find(
+                    (project) =>
+                        project._id ===
+                        (typeof task.projectId === "object"
+                            ? task.projectId?._id
+                            : task.projectId)
+                )?.name ||
+                "";
+
+            const assignedUserName =
+                task.assignedTo?.name ||
+                users.find(
+                    (item) =>
+                        item._id ===
+                        (typeof task.assignedTo === "object"
+                            ? task.assignedTo?._id
+                            : task.assignedTo)
+                )?.name ||
+                "";
+
+            const matchesSearch =
+                !search ||
+                task.title?.toLowerCase().includes(search) ||
+                task.description?.toLowerCase().includes(search) ||
+                projectName.toLowerCase().includes(search) ||
+                assignedUserName.toLowerCase().includes(search);
+
+            const matchesStatus =
+                statusFilter === "all" ||
+                task.status === statusFilter;
+
+            const matchesPriority =
+                priorityFilter === "all" ||
+                task.priority === priorityFilter;
+
+            return (
+                matchesSearch &&
+                matchesStatus &&
+                matchesPriority
+            );
+        })
+        .sort((a, b) => {
+            if (sortBy === "name") {
+                return (a.title || "").localeCompare(
+                    b.title || ""
+                );
+            }
+
+            if (sortBy === "oldest") {
+                return (
+                    new Date(a.createdAt || 0) -
+                    new Date(b.createdAt || 0)
+                );
+            }
+
+            return (
+                new Date(b.createdAt || 0) -
+                new Date(a.createdAt || 0)
+            );
+        });
+
+    // ==========================================
+    // CLEAR FILTERS
+    // ==========================================
+
+    const clearFilters = () => {
+        setSearchTerm("");
+        setStatusFilter("all");
+        setPriorityFilter("all");
+        setSortBy("newest");
+    };
+
+    const hasActiveFilters =
+        searchTerm.trim() !== "" ||
+        statusFilter !== "all" ||
+        priorityFilter !== "all" ||
+        sortBy !== "newest";
 
     // ==========================================
     // CREATE FORM CHANGE
@@ -629,151 +726,318 @@ const Tasks = () => {
             )}
 
             {/* ======================================
+                SEARCH / FILTER / SORT CONTROLS
+            ====================================== */}
+
+            <div
+                className="tasks-controls"
+                style={{
+                    marginBottom: "24px",
+                    padding: "18px",
+                    border: "1px solid rgba(255, 255, 255, 0.07)",
+                    borderRadius: "14px",
+                    background:
+                        "linear-gradient(145deg, rgba(27, 27, 34, 0.96), rgba(19, 19, 25, 0.96))",
+                    boxShadow:
+                        "0 10px 30px rgba(0, 0, 0, 0.18)",
+                }}
+            >
+
+                <div className="tasks-control-group">
+
+                    <label>
+                        Search Tasks
+                    </label>
+
+                    <input
+                        type="text"
+                        placeholder="Search by title, description, project..."
+                        value={searchTerm}
+                        onChange={(event) =>
+                            setSearchTerm(event.target.value)
+                        }
+                    />
+
+                </div>
+
+                <div className="tasks-control-group">
+
+                    <label>
+                        Status
+                    </label>
+
+                    <select
+                        value={statusFilter}
+                        onChange={(event) =>
+                            setStatusFilter(event.target.value)
+                        }
+                    >
+                        <option value="all">
+                            All Status
+                        </option>
+
+                        <option value="todo">
+                            To Do
+                        </option>
+
+                        <option value="in-progress">
+                            In Progress
+                        </option>
+
+                        <option value="completed">
+                            Completed
+                        </option>
+                    </select>
+
+                </div>
+
+                <div className="tasks-control-group">
+
+                    <label>
+                        Priority
+                    </label>
+
+                    <select
+                        value={priorityFilter}
+                        onChange={(event) =>
+                            setPriorityFilter(event.target.value)
+                        }
+                    >
+                        <option value="all">
+                            All Priorities
+                        </option>
+
+                        <option value="low">
+                            Low
+                        </option>
+
+                        <option value="medium">
+                            Medium
+                        </option>
+
+                        <option value="high">
+                            High
+                        </option>
+                    </select>
+
+                </div>
+
+                <div className="tasks-control-group">
+
+                    <label>
+                        Sort By
+                    </label>
+
+                    <select
+                        value={sortBy}
+                        onChange={(event) =>
+                            setSortBy(event.target.value)
+                        }
+                    >
+                        <option value="newest">
+                            Newest First
+                        </option>
+
+                        <option value="oldest">
+                            Oldest First
+                        </option>
+
+                        <option value="name">
+                            Task Name
+                        </option>
+                    </select>
+
+                </div>
+
+                <div className="tasks-filter-actions">
+
+                    <span className="tasks-filter-count">
+                        Showing{" "}
+                        <strong>
+                            {filteredTasks.length}
+                        </strong>{" "}
+                        of{" "}
+                        <strong>
+                            {tasks.length}
+                        </strong>{" "}
+                        tasks
+                    </span>
+
+                    {hasActiveFilters && (
+                        <button
+                            type="button"
+                            className="clear-task-filters-button"
+                            onClick={clearFilters}
+                        >
+                            Clear Filters
+                        </button>
+                    )}
+
+                </div>
+
+            </div>
+
+            {/* ======================================
                 TASK LIST
             ====================================== */}
 
-            <div className="tasks-grid">
+            {filteredTasks.length > 0 && (
+                <div className="tasks-grid">
 
-                {tasks.map((task) => (
+                    {filteredTasks.map((task) => (
 
-                    <div
-                        className="task-card"
-                        key={task._id}
-                    >
+                        <div
+                            className="task-card"
+                            key={task._id}
+                        >
 
-                        <div className="task-card-header">
+                            <div className="task-card-header">
 
-                            <h2>
-                                {task.title}
-                            </h2>
+                                <h2>
+                                    {task.title}
+                                </h2>
 
-                            <span
-                                className={`task-status task-status-${task.status}`}
-                            >
-                                {task.status}
-                            </span>
-
-                        </div>
-
-                        <p className="task-description">
-
-                            {task.description ||
-                                "No description provided."}
-
-                        </p>
-
-                        <div className="task-info">
-
-                            <div>
-                                <span>
-                                    Project
-                                </span>
-
-                                <strong>
-                                    {getProjectName(task)}
-                                </strong>
-                            </div>
-
-                            <div>
-                                <span>
-                                    Assigned To
-                                </span>
-
-                                <strong>
-                                    {getAssignedUserName(task)}
-                                </strong>
-                            </div>
-
-                            <div>
-                                <span>
-                                    Priority
-                                </span>
-
-                                <strong
-                                    className={`task-priority task-priority-${task.priority}`}
+                                <span
+                                    className={`task-status task-status-${task.status}`}
                                 >
-                                    {task.priority}
-                                </strong>
+                                    {task.status}
+                                </span>
+
                             </div>
 
-                        </div>
+                            <p className="task-description">
 
-                        {/* ==================================
-                            CARD FOOTER
-                        ================================== */}
+                                {task.description ||
+                                    "No description provided."}
 
-                        <div className="task-card-footer">
+                            </p>
 
-                            <span>
-                                Created{" "}
-                                {task.createdAt
-                                    ? new Date(
-                                        task.createdAt
-                                    ).toLocaleDateString()
-                                    : "N/A"}
-                            </span>
+                            <div className="task-info">
 
-                            <div className="task-card-actions">
-
-                                {canManageTasks && (
-                                    <button
-                                        className="edit-task-button"
-                                        onClick={() =>
-                                            openEditForm(task)
-                                        }
-                                    >
-                                        Edit
-                                    </button>
-                                )}
-
-                                {isOwner && (
-                                    <button
-                                        className="delete-task-button"
-                                        onClick={() =>
-                                            openDeleteModal(task)
-                                        }
-                                    >
-                                        Delete
-                                    </button>
-                                )}
-
-                                {!canManageTasks && (
-                                    <span
-                                        style={{
-                                            fontSize: "13px",
-                                            opacity: 0.5,
-                                        }}
-                                    >
-                                        View only
+                                <div>
+                                    <span>
+                                        Project
                                     </span>
-                                )}
+
+                                    <strong>
+                                        {getProjectName(task)}
+                                    </strong>
+                                </div>
+
+                                <div>
+                                    <span>
+                                        Assigned To
+                                    </span>
+
+                                    <strong>
+                                        {getAssignedUserName(task)}
+                                    </strong>
+                                </div>
+
+                                <div>
+                                    <span>
+                                        Priority
+                                    </span>
+
+                                    <strong
+                                        className={`task-priority task-priority-${task.priority}`}
+                                    >
+                                        {task.priority}
+                                    </strong>
+                                </div>
+
+                            </div>
+
+                            {/* ==================================
+                                CARD FOOTER
+                            ================================== */}
+
+                            <div className="task-card-footer">
+
+                                <span>
+                                    Created{" "}
+                                    {task.createdAt
+                                        ? new Date(
+                                            task.createdAt
+                                        ).toLocaleDateString()
+                                        : "N/A"}
+                                </span>
+
+                                <div className="task-card-actions">
+
+                                    {canManageTasks && (
+                                        <button
+                                            className="edit-task-button"
+                                            onClick={() =>
+                                                openEditForm(task)
+                                            }
+                                        >
+                                            Edit
+                                        </button>
+                                    )}
+
+                                    {isOwner && (
+                                        <button
+                                            className="delete-task-button"
+                                            onClick={() =>
+                                                openDeleteModal(task)
+                                            }
+                                        >
+                                            Delete
+                                        </button>
+                                    )}
+
+                                    {!canManageTasks && (
+                                        <span
+                                            style={{
+                                                fontSize: "13px",
+                                                opacity: 0.5,
+                                            }}
+                                        >
+                                            View only
+                                        </span>
+                                    )}
+
+                                </div>
 
                             </div>
 
                         </div>
 
-                    </div>
+                    ))}
 
-                ))}
-
-            </div>
+                </div>
+            )}
 
             {/* ======================================
                 EMPTY STATE
             ====================================== */}
 
-            {tasks.length === 0 && (
+            {filteredTasks.length === 0 && (
 
                 <div className="empty-tasks">
 
                     <h3>
-                        No Tasks Found
+                        {tasks.length === 0
+                            ? "No Tasks Found"
+                            : "No Matching Tasks"}
                     </h3>
 
                     <p>
-                        There are currently no tasks
-                        in this organization.
+                        {tasks.length === 0
+                            ? "There are currently no tasks in this organization."
+                            : "No tasks match your current search or filters."}
                     </p>
+
+                    {tasks.length > 0 && hasActiveFilters && (
+                        <button
+                            type="button"
+                            className="clear-task-filters-button"
+                            onClick={clearFilters}
+                        >
+                            Clear Filters
+                        </button>
+                    )}
 
                 </div>
 
@@ -850,9 +1114,7 @@ const Tasks = () => {
                                 <textarea
                                     name="description"
                                     placeholder="Enter task description"
-                                    value={
-                                        formData.description
-                                    }
+                                    value={formData.description}
                                     onChange={handleFormChange}
                                     disabled={creating}
                                     rows="4"

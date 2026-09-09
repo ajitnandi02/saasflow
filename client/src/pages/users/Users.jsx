@@ -3,15 +3,12 @@ import api from "../../services/api.js";
 import { useAuth } from "../../context/AuthContext.jsx";
 import "./Users.css";
 
-
 // ==========================================
 // USERS PAGE
 // ==========================================
 
 const Users = () => {
-
     const { user: currentUser } = useAuth();
-
 
     // ==========================================
     // USERS STATE
@@ -21,6 +18,13 @@ const Users = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
+    // ==========================================
+    // SEARCH / FILTER / SORT STATE
+    // ==========================================
+
+    const [searchTerm, setSearchTerm] = useState("");
+    const [roleFilter, setRoleFilter] = useState("all");
+    const [sortBy, setSortBy] = useState("newest");
 
     // ==========================================
     // CREATE USER STATE
@@ -39,7 +43,6 @@ const Users = () => {
     const [formSuccess, setFormSuccess] = useState("");
     const [creating, setCreating] = useState(false);
 
-
     // ==========================================
     // EDIT USER STATE
     // ==========================================
@@ -57,7 +60,6 @@ const Users = () => {
     const [editSuccess, setEditSuccess] = useState("");
     const [updating, setUpdating] = useState(false);
 
-
     // ==========================================
     // DELETE USER STATE
     // ==========================================
@@ -68,7 +70,6 @@ const Users = () => {
 
     const [deleteError, setDeleteError] = useState("");
     const [deleting, setDeleting] = useState(false);
-
 
     // ==========================================
     // ROLE PERMISSIONS
@@ -83,29 +84,25 @@ const Users = () => {
     const canManageUsers =
         isOwner || isAdmin;
 
-
     // ==========================================
     // CHECK EDIT PERMISSION
     // ==========================================
 
     const canEditUser = (targetUser) => {
-
         if (!canManageUsers) {
             return false;
         }
 
-        // Nobody can change owner role
-        // Owner can still edit owner's name/email.
+        // Owner can be edited,
+        // but owner role cannot be changed.
         return true;
     };
-
 
     // ==========================================
     // CHECK DELETE PERMISSION
     // ==========================================
 
     const canDeleteUser = (targetUser) => {
-
         if (!canManageUsers) {
             return false;
         }
@@ -118,54 +115,93 @@ const Users = () => {
         return true;
     };
 
-
     // ==========================================
     // FETCH USERS
     // ==========================================
 
     const fetchUsers = async () => {
-
         try {
-
             setLoading(true);
             setError("");
 
             const response = await api.get("/users");
 
             setUsers(response.data.users || []);
-
         } catch (error) {
-
             const message =
                 error.response?.data?.message ||
                 "Failed to load users";
 
             setError(message);
-
         } finally {
-
             setLoading(false);
         }
     };
 
+    // ==========================================
+    // FILTERED / SORTED USERS
+    // ==========================================
+
+    const filteredUsers = users
+        .filter((user) => {
+            const search = searchTerm
+                .trim()
+                .toLowerCase();
+
+            const matchesSearch =
+                !search ||
+                user.name
+                    ?.toLowerCase()
+                    .includes(search) ||
+                user.email
+                    ?.toLowerCase()
+                    .includes(search);
+
+            const matchesRole =
+                roleFilter === "all" ||
+                user.role === roleFilter;
+
+            return (
+                matchesSearch &&
+                matchesRole
+            );
+        })
+        .sort((a, b) => {
+            if (sortBy === "name") {
+                return (
+                    (a.name || "").localeCompare(
+                        b.name || ""
+                    )
+                );
+            }
+
+            if (sortBy === "oldest") {
+                return (
+                    new Date(a.createdAt || 0) -
+                    new Date(b.createdAt || 0)
+                );
+            }
+
+            // newest
+            return (
+                new Date(b.createdAt || 0) -
+                new Date(a.createdAt || 0)
+            );
+        });
 
     // ==========================================
     // INITIAL LOAD
     // ==========================================
 
     useEffect(() => {
-
         fetchUsers();
-
     }, []);
-
 
     // ==========================================
     // CREATE FORM CHANGE
     // ==========================================
 
     const handleFormChange = (event) => {
-
         const { name, value } = event.target;
 
         setFormData((previous) => ({
@@ -177,13 +213,11 @@ const Users = () => {
         setFormSuccess("");
     };
 
-
     // ==========================================
     // OPEN CREATE FORM
     // ==========================================
 
     const openCreateForm = () => {
-
         if (!canManageUsers) {
             return;
         }
@@ -201,13 +235,11 @@ const Users = () => {
         setShowForm(true);
     };
 
-
     // ==========================================
     // CLOSE CREATE FORM
     // ==========================================
 
     const closeCreateForm = () => {
-
         if (creating) {
             return;
         }
@@ -225,13 +257,11 @@ const Users = () => {
         setFormSuccess("");
     };
 
-
     // ==========================================
     // CREATE USER
     // ==========================================
 
     const handleCreateUser = async (event) => {
-
         event.preventDefault();
 
         if (!canManageUsers) {
@@ -242,11 +272,12 @@ const Users = () => {
         setFormSuccess("");
 
         const name = formData.name.trim();
-        const email = formData.email.trim().toLowerCase();
+        const email = formData.email
+            .trim()
+            .toLowerCase();
         const password = formData.password;
 
         if (!name || !email || !password) {
-
             setFormError(
                 "Name, email and password are required"
             );
@@ -255,7 +286,6 @@ const Users = () => {
         }
 
         if (password.length < 6) {
-
             setFormError(
                 "Password must be at least 6 characters long"
             );
@@ -264,7 +294,6 @@ const Users = () => {
         }
 
         try {
-
             setCreating(true);
 
             await api.post("/users", {
@@ -281,7 +310,6 @@ const Users = () => {
             await fetchUsers();
 
             setTimeout(() => {
-
                 setShowForm(false);
 
                 setFormData({
@@ -292,30 +320,23 @@ const Users = () => {
                 });
 
                 setFormSuccess("");
-
             }, 800);
-
         } catch (error) {
-
             const message =
                 error.response?.data?.message ||
                 "Failed to create user";
 
             setFormError(message);
-
         } finally {
-
             setCreating(false);
         }
     };
-
 
     // ==========================================
     // OPEN EDIT USER MODAL
     // ==========================================
 
     const openEditForm = (targetUser) => {
-
         if (!canEditUser(targetUser)) {
             return;
         }
@@ -334,13 +355,11 @@ const Users = () => {
         setShowEditForm(true);
     };
 
-
     // ==========================================
     // CLOSE EDIT MODAL
     // ==========================================
 
     const closeEditForm = () => {
-
         if (updating) {
             return;
         }
@@ -358,13 +377,11 @@ const Users = () => {
         setEditSuccess("");
     };
 
-
     // ==========================================
     // EDIT FORM CHANGE
     // ==========================================
 
     const handleEditFormChange = (event) => {
-
         const { name, value } = event.target;
 
         setEditFormData((previous) => ({
@@ -376,13 +393,11 @@ const Users = () => {
         setEditSuccess("");
     };
 
-
     // ==========================================
     // UPDATE USER
     // ==========================================
 
     const handleUpdateUser = async (event) => {
-
         event.preventDefault();
 
         if (!editingUser || !canManageUsers) {
@@ -393,11 +408,11 @@ const Users = () => {
         setEditSuccess("");
 
         const name = editFormData.name.trim();
-        const email = editFormData.email.trim().toLowerCase();
-
+        const email = editFormData.email
+            .trim()
+            .toLowerCase();
 
         if (!name || !email) {
-
             setEditError(
                 "Name and email are required"
             );
@@ -405,13 +420,11 @@ const Users = () => {
             return;
         }
 
-
         // Owner role cannot be changed.
         if (
             editingUser.role === "owner" &&
             editFormData.role !== "owner"
         ) {
-
             setEditError(
                 "Owner role cannot be changed"
             );
@@ -419,14 +432,12 @@ const Users = () => {
             return;
         }
 
-
         // Admin cannot demote another admin.
         if (
             currentUser?.role === "admin" &&
             editingUser.role === "admin" &&
             editFormData.role !== "admin"
         ) {
-
             setEditError(
                 "Admin cannot change another admin's role"
             );
@@ -434,13 +445,11 @@ const Users = () => {
             return;
         }
 
-
         // User cannot change their own role.
         if (
             editingUser._id === currentUser?._id &&
             editFormData.role !== editingUser.role
         ) {
-
             setEditError(
                 "You cannot change your own role"
             );
@@ -448,9 +457,7 @@ const Users = () => {
             return;
         }
 
-
         try {
-
             setUpdating(true);
 
             await api.put(
@@ -468,13 +475,11 @@ const Users = () => {
 
             await fetchUsers();
 
-
             // If current user changes their own
             // name/email, refresh local auth data.
             if (
                 editingUser._id === currentUser?._id
             ) {
-
                 const updatedUser = {
                     ...currentUser,
                     name,
@@ -488,9 +493,7 @@ const Users = () => {
                 );
             }
 
-
             setTimeout(() => {
-
                 setShowEditForm(false);
                 setEditingUser(null);
 
@@ -501,65 +504,51 @@ const Users = () => {
                 });
 
                 setEditSuccess("");
-
             }, 800);
-
         } catch (error) {
-
             const message =
                 error.response?.data?.message ||
                 "Failed to update user";
 
             setEditError(message);
-
         } finally {
-
             setUpdating(false);
         }
     };
-
 
     // ==========================================
     // OPEN DELETE CONFIRMATION
     // ==========================================
 
     const openDeleteConfirm = (targetUser) => {
-
         if (!canDeleteUser(targetUser)) {
             return;
         }
 
         setDeletingUser(targetUser);
-
         setDeleteError("");
-
         setShowDeleteConfirm(true);
     };
-
 
     // ==========================================
     // CLOSE DELETE CONFIRMATION
     // ==========================================
 
     const closeDeleteConfirm = () => {
-
         if (deleting) {
             return;
         }
 
         setShowDeleteConfirm(false);
         setDeletingUser(null);
-
         setDeleteError("");
     };
-
 
     // ==========================================
     // DELETE USER
     // ==========================================
 
     const handleDeleteUser = async () => {
-
         if (
             !deletingUser ||
             !canDeleteUser(deletingUser)
@@ -568,9 +557,7 @@ const Users = () => {
         }
 
         try {
-
             setDeleting(true);
-
             setDeleteError("");
 
             await api.delete(
@@ -586,51 +573,39 @@ const Users = () => {
 
             setShowDeleteConfirm(false);
             setDeletingUser(null);
-
         } catch (error) {
-
             const message =
                 error.response?.data?.message ||
                 "Failed to delete user";
 
             setDeleteError(message);
-
         } finally {
-
             setDeleting(false);
         }
     };
-
 
     // ==========================================
     // LOADING
     // ==========================================
 
     if (loading) {
-
         return (
             <div className="users-message">
-
                 <h2>
                     Loading Users...
                 </h2>
-
             </div>
         );
     }
-
 
     // ==========================================
     // ERROR
     // ==========================================
 
     if (error) {
-
         return (
             <div className="users-message">
-
                 <div>
-
                     <h2>
                         Users Error
                     </h2>
@@ -638,22 +613,17 @@ const Users = () => {
                     <p className="users-error">
                         {error}
                     </p>
-
                 </div>
-
             </div>
         );
     }
-
 
     // ==========================================
     // MAIN UI
     // ==========================================
 
     return (
-
         <div className="users-page">
-
 
             {/* ==================================
                 USERS HEADER
@@ -662,7 +632,6 @@ const Users = () => {
             <div className="users-header">
 
                 <div>
-
                     <p
                         style={{
                             margin: 0,
@@ -684,17 +653,13 @@ const Users = () => {
                     <p>
                         Manage users in your organization
                     </p>
-
                 </div>
 
-
                 <div className="users-header-actions">
-
 
                     {/* TOTAL USERS */}
 
                     <div className="users-count">
-
                         <span>
                             Total Users
                         </span>
@@ -702,34 +667,27 @@ const Users = () => {
                         <strong>
                             {users.length}
                         </strong>
-
                     </div>
-
 
                     {/* ADD USER */}
 
                     {canManageUsers && (
-
                         <button
                             className="add-user-button"
                             onClick={openCreateForm}
                         >
                             + Add User
                         </button>
-
                     )}
 
                 </div>
-
             </div>
-
 
             {/* ==================================
                 MEMBER INFORMATION
             ================================== */}
 
             {!canManageUsers && (
-
                 <div
                     style={{
                         marginBottom: "20px",
@@ -744,9 +702,157 @@ const Users = () => {
                     You have view-only access to the
                     organization users.
                 </div>
-
             )}
 
+            {/* ==================================
+                SEARCH / FILTER / SORT CONTROLS
+            ================================== */}
+
+            <div
+                style={{
+                    display: "flex",
+                    gap: "12px",
+                    flexWrap: "wrap",
+                    marginBottom: "20px",
+                }}
+            >
+                {/* SEARCH */}
+
+                <input
+                    type="text"
+                    placeholder="Search by name or email..."
+                    value={searchTerm}
+                    onChange={(event) =>
+                        setSearchTerm(event.target.value)
+                    }
+                    style={{
+                        flex: "1 1 260px",
+                        minWidth: "220px",
+                        padding: "12px 14px",
+                        borderRadius: "10px",
+                        border: "1px solid #333",
+                        background: "#18181d",
+                        color: "#fff",
+                        outline: "none",
+                        fontSize: "14px",
+                    }}
+                />
+
+                {/* ROLE FILTER */}
+
+                <select
+                    value={roleFilter}
+                    onChange={(event) =>
+                        setRoleFilter(event.target.value)
+                    }
+                    style={{
+                        padding: "12px 14px",
+                        borderRadius: "10px",
+                        border: "1px solid #333",
+                        background: "#18181d",
+                        color: "#fff",
+                        outline: "none",
+                        fontSize: "14px",
+                        minWidth: "150px",
+                    }}
+                >
+                    <option value="all">
+                        All Roles
+                    </option>
+
+                    <option value="owner">
+                        Owner
+                    </option>
+
+                    <option value="admin">
+                        Admin
+                    </option>
+
+                    <option value="member">
+                        Member
+                    </option>
+                </select>
+
+                {/* SORT */}
+
+                <select
+                    value={sortBy}
+                    onChange={(event) =>
+                        setSortBy(event.target.value)
+                    }
+                    style={{
+                        padding: "12px 14px",
+                        borderRadius: "10px",
+                        border: "1px solid #333",
+                        background: "#18181d",
+                        color: "#fff",
+                        outline: "none",
+                        fontSize: "14px",
+                        minWidth: "170px",
+                    }}
+                >
+                    <option value="newest">
+                        Newest First
+                    </option>
+
+                    <option value="oldest">
+                        Oldest First
+                    </option>
+
+                    <option value="name">
+                        Name A-Z
+                    </option>
+                </select>
+
+                {/* CLEAR */}
+
+                {(searchTerm ||
+                    roleFilter !== "all" ||
+                    sortBy !== "newest") && (
+                    <button
+                        type="button"
+                        onClick={() => {
+                            setSearchTerm("");
+                            setRoleFilter("all");
+                            setSortBy("newest");
+                        }}
+                        style={{
+                            padding: "12px 16px",
+                            borderRadius: "10px",
+                            border: "1px solid #333",
+                            background: "#222228",
+                            color: "#fff",
+                            cursor: "pointer",
+                            fontSize: "14px",
+                            fontWeight: "600",
+                        }}
+                    >
+                        Clear
+                    </button>
+                )}
+            </div>
+
+            {/* ==================================
+                FILTER RESULT INFORMATION
+            ================================== */}
+
+            <div
+                style={{
+                    marginBottom: "12px",
+                    fontSize: "13px",
+                    opacity: 0.6,
+                }}
+            >
+                Showing{" "}
+                <strong>
+                    {filteredUsers.length}
+                </strong>{" "}
+                of{" "}
+                <strong>
+                    {users.length}
+                </strong>{" "}
+                users
+            </div>
 
             {/* ==================================
                 USERS TABLE
@@ -757,9 +863,7 @@ const Users = () => {
                 <table className="users-table">
 
                     <thead>
-
                         <tr>
-
                             <th>
                                 Name
                             </th>
@@ -779,84 +883,60 @@ const Users = () => {
                             <th>
                                 Actions
                             </th>
-
                         </tr>
-
                     </thead>
-
 
                     <tbody>
 
-                        {users.map((targetUser) => (
-
+                        {filteredUsers.map((targetUser) => (
                             <tr
                                 key={targetUser._id}
                             >
 
-
                                 {/* NAME */}
 
                                 <td>
-
                                     <div className="user-name">
-
                                         {targetUser.name}
-
                                     </div>
-
                                 </td>
-
 
                                 {/* EMAIL */}
 
                                 <td>
-
                                     <span className="user-email">
-
                                         {targetUser.email}
-
                                     </span>
-
                                 </td>
-
 
                                 {/* ROLE */}
 
                                 <td>
-
                                     <span
                                         className={`role-badge role-${targetUser.role}`}
                                     >
                                         {targetUser.role}
                                     </span>
-
                                 </td>
-
 
                                 {/* JOINED */}
 
                                 <td>
-
                                     {targetUser.createdAt
                                         ? new Date(
                                             targetUser.createdAt
                                         ).toLocaleDateString()
                                         : "N/A"}
-
                                 </td>
-
 
                                 {/* ACTIONS */}
 
                                 <td>
-
                                     <div className="user-actions">
-
 
                                         {/* EDIT */}
 
                                         {canEditUser(targetUser) && (
-
                                             <button
                                                 className="edit-user-button"
                                                 onClick={() =>
@@ -867,14 +947,11 @@ const Users = () => {
                                             >
                                                 Edit
                                             </button>
-
                                         )}
-
 
                                         {/* DELETE */}
 
                                         {canDeleteUser(targetUser) && (
-
                                             <button
                                                 className="delete-user-button"
                                                 onClick={() =>
@@ -885,14 +962,11 @@ const Users = () => {
                                             >
                                                 Delete
                                             </button>
-
                                         )}
-
 
                                         {/* NO ACTION */}
 
                                         {!canManageUsers && (
-
                                             <span
                                                 style={{
                                                     fontSize: "13px",
@@ -901,63 +975,79 @@ const Users = () => {
                                             >
                                                 View only
                                             </span>
-
                                         )}
 
                                     </div>
-
                                 </td>
 
                             </tr>
-
                         ))}
 
                     </tbody>
 
                 </table>
 
-
                 {/* ==================================
                     EMPTY STATE
                 ================================== */}
 
-                {users.length === 0 && (
-
+                {filteredUsers.length === 0 && (
                     <div className="empty-users">
 
                         <h3>
-                            No Users Found
+                            {users.length === 0
+                                ? "No Users Found"
+                                : "No Matching Users"}
                         </h3>
 
                         <p>
-                            There are currently no users
-                            in this organization.
+                            {users.length === 0
+                                ? "There are currently no users in this organization."
+                                : "No users match your current search or filter."}
                         </p>
 
-                    </div>
+                        {users.length > 0 && (
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setSearchTerm("");
+                                    setRoleFilter("all");
+                                    setSortBy("newest");
+                                }}
+                                style={{
+                                    marginTop: "10px",
+                                    padding: "10px 16px",
+                                    borderRadius: "8px",
+                                    border: "1px solid #333",
+                                    background: "#222228",
+                                    color: "#fff",
+                                    cursor: "pointer",
+                                    fontWeight: "600",
+                                }}
+                            >
+                                Clear Filters
+                            </button>
+                        )}
 
+                    </div>
                 )}
 
             </div>
-
 
             {/* ==================================
                 CREATE USER MODAL
             ================================== */}
 
             {showForm && canManageUsers && (
-
                 <div className="user-modal-overlay">
 
                     <div className="user-modal">
-
 
                         {/* HEADER */}
 
                         <div className="user-modal-header">
 
                             <div>
-
                                 <h2>
                                     Add New User
                                 </h2>
@@ -966,9 +1056,7 @@ const Users = () => {
                                     Create a new user for your
                                     organization.
                                 </p>
-
                             </div>
-
 
                             <button
                                 type="button"
@@ -981,14 +1069,12 @@ const Users = () => {
 
                         </div>
 
-
                         {/* FORM */}
 
                         <form
                             className="user-form"
                             onSubmit={handleCreateUser}
                         >
-
 
                             {/* NAME */}
 
@@ -1010,7 +1096,6 @@ const Users = () => {
 
                             </div>
 
-
                             {/* EMAIL */}
 
                             <div className="form-group">
@@ -1030,7 +1115,6 @@ const Users = () => {
                                 />
 
                             </div>
-
 
                             {/* PASSWORD */}
 
@@ -1052,7 +1136,6 @@ const Users = () => {
 
                             </div>
 
-
                             {/* ROLE */}
 
                             <div className="form-group">
@@ -1068,7 +1151,6 @@ const Users = () => {
                                     onChange={handleFormChange}
                                     disabled={creating}
                                 >
-
                                     <option value="member">
                                         Member
                                     </option>
@@ -1076,33 +1158,25 @@ const Users = () => {
                                     <option value="admin">
                                         Admin
                                     </option>
-
                                 </select>
 
                             </div>
 
-
                             {/* ERROR */}
 
                             {formError && (
-
                                 <p className="form-error">
                                     {formError}
                                 </p>
-
                             )}
-
 
                             {/* SUCCESS */}
 
                             {formSuccess && (
-
                                 <p className="form-success">
                                     {formSuccess}
                                 </p>
-
                             )}
-
 
                             {/* ACTIONS */}
 
@@ -1134,27 +1208,22 @@ const Users = () => {
                     </div>
 
                 </div>
-
             )}
-
 
             {/* ==================================
                 EDIT USER MODAL
             ================================== */}
 
             {showEditForm && editingUser && (
-
                 <div className="user-modal-overlay">
 
                     <div className="user-modal">
-
 
                         {/* HEADER */}
 
                         <div className="user-modal-header">
 
                             <div>
-
                                 <h2>
                                     Edit User
                                 </h2>
@@ -1162,9 +1231,7 @@ const Users = () => {
                                 <p>
                                     Update user information.
                                 </p>
-
                             </div>
-
 
                             <button
                                 type="button"
@@ -1177,14 +1244,12 @@ const Users = () => {
 
                         </div>
 
-
                         {/* FORM */}
 
                         <form
                             className="user-form"
                             onSubmit={handleUpdateUser}
                         >
-
 
                             {/* NAME */}
 
@@ -1207,7 +1272,6 @@ const Users = () => {
 
                             </div>
 
-
                             {/* EMAIL */}
 
                             <div className="form-group">
@@ -1228,7 +1292,6 @@ const Users = () => {
                                 />
 
                             </div>
-
 
                             {/* ROLE */}
 
@@ -1265,74 +1328,56 @@ const Users = () => {
                                     </option>
 
                                     {editingUser.role === "owner" && (
-
                                         <option value="owner">
                                             Owner
                                         </option>
-
                                     )}
 
                                 </select>
 
-
                                 {/* OWNER MESSAGE */}
 
                                 {editingUser.role === "owner" && (
-
                                     <small>
                                         Owner role cannot be changed.
                                     </small>
-
                                 )}
-
 
                                 {/* ADMIN MESSAGE */}
 
                                 {currentUser?.role === "admin" &&
                                     editingUser.role === "admin" && (
-
                                         <small>
                                             Admin cannot change another
                                             admin's role.
                                         </small>
-
                                     )}
-
 
                                 {/* SELF ROLE MESSAGE */}
 
                                 {editingUser._id === currentUser?._id && (
-
                                     <small>
                                         You cannot change your own role.
                                     </small>
-
                                 )}
 
                             </div>
 
-
                             {/* ERROR */}
 
                             {editError && (
-
                                 <p className="form-error">
                                     {editError}
                                 </p>
-
                             )}
-
 
                             {/* SUCCESS */}
 
                             {editSuccess && (
-
                                 <p className="form-success">
                                     {editSuccess}
                                 </p>
-
                             )}
-
 
                             {/* ACTIONS */}
 
@@ -1364,60 +1409,44 @@ const Users = () => {
                     </div>
 
                 </div>
-
             )}
-
 
             {/* ==================================
                 DELETE CONFIRMATION
             ================================== */}
 
             {showDeleteConfirm && deletingUser && (
-
                 <div className="user-modal-overlay">
 
                     <div className="delete-modal">
-
 
                         <div className="delete-modal-icon">
                             !
                         </div>
 
-
                         <h2>
                             Delete User?
                         </h2>
 
-
                         <p>
-
                             Are you sure you want to delete{" "}
-
                             <strong>
                                 {deletingUser.name}
                             </strong>
-
                             ?
-
                         </p>
-
 
                         <p className="delete-warning">
                             This action cannot be undone.
                         </p>
 
-
                         {deleteError && (
-
                             <p className="form-error">
                                 {deleteError}
                             </p>
-
                         )}
 
-
                         <div className="user-form-actions">
-
 
                             <button
                                 type="button"
@@ -1427,7 +1456,6 @@ const Users = () => {
                             >
                                 Cancel
                             </button>
-
 
                             <button
                                 type="button"
@@ -1440,18 +1468,15 @@ const Users = () => {
                                     : "Delete User"}
                             </button>
 
-
                         </div>
 
                     </div>
 
                 </div>
-
             )}
 
         </div>
     );
 };
-
 
 export default Users;

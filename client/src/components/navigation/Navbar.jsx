@@ -1,16 +1,22 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext.jsx";
+import { getUnreadCount } from "../../services/notificationService.js";
+import NotificationPanel from "../common/NotificationPanel.jsx";
 import "./Navbar.css";
 
 const Navbar = () => {
     const navigate = useNavigate();
     const { user, logout } = useAuth();
+
     const [menuOpen, setMenuOpen] = useState(false);
+    const [notificationOpen, setNotificationOpen] = useState(false);
+    const [unreadCount, setUnreadCount] = useState(0);
 
     const handleLogout = () => {
         logout();
         setMenuOpen(false);
+        setNotificationOpen(false);
         navigate("/login");
     };
 
@@ -20,6 +26,25 @@ const Navbar = () => {
 
     const getNavLinkClass = ({ isActive }) =>
         `nav-link ${isActive ? "active" : ""}`;
+
+    // Load unread notification count
+    const loadUnreadCount = async () => {
+        try {
+            const data = await getUnreadCount();
+            setUnreadCount(data.count || 0);
+        } catch (error) {
+            console.error(
+                "Failed to load unread notifications:",
+                error
+            );
+        }
+    };
+
+    useEffect(() => {
+        if (user) {
+            loadUnreadCount();
+        }
+    }, [user]);
 
     return (
         <nav className="navbar">
@@ -67,6 +92,44 @@ const Navbar = () => {
 
                 {/* Desktop User Section */}
                 <div className="desktop-user">
+
+                    {/* Notification */}
+                    {user && (
+                        <div className="notification-wrapper">
+                            <button
+                                type="button"
+                                className="notification-button"
+                                onClick={() =>
+                                    setNotificationOpen(
+                                        !notificationOpen
+                                    )
+                                }
+                                aria-label="Notifications"
+                            >
+                                🔔
+
+                                {unreadCount > 0 && (
+                                    <span className="notification-badge">
+                                        {unreadCount > 99
+                                            ? "99+"
+                                            : unreadCount}
+                                    </span>
+                                )}
+                            </button>
+
+                            {notificationOpen && (
+                                <NotificationPanel
+                                    onClose={() =>
+                                        setNotificationOpen(false)
+                                    }
+                                    onUnreadChange={
+                                        setUnreadCount
+                                    }
+                                />
+                            )}
+                        </div>
+                    )}
+
                     {user && (
                         <div className="user-info">
                             <strong>{user.name}</strong>
@@ -85,7 +148,9 @@ const Navbar = () => {
                 {/* Mobile Menu Button */}
                 <button
                     className="mobile-menu-btn"
-                    onClick={() => setMenuOpen(!menuOpen)}
+                    onClick={() =>
+                        setMenuOpen(!menuOpen)
+                    }
                     aria-label="Toggle navigation menu"
                 >
                     {menuOpen ? "✕" : "☰"}
@@ -127,6 +192,44 @@ const Navbar = () => {
                     >
                         Tasks
                     </NavLink>
+
+                    {/* Mobile Notification */}
+                    {user && (
+                        <div className="mobile-notification-section">
+                            <button
+                                type="button"
+                                className="mobile-notification-button"
+                                onClick={() =>
+                                    setNotificationOpen(
+                                        !notificationOpen
+                                    )
+                                }
+                            >
+                                <span>
+                                    🔔 Notifications
+                                </span>
+
+                                {unreadCount > 0 && (
+                                    <span className="mobile-notification-badge">
+                                        {unreadCount > 99
+                                            ? "99+"
+                                            : unreadCount}
+                                    </span>
+                                )}
+                            </button>
+
+                            {notificationOpen && (
+                                <NotificationPanel
+                                    onClose={() =>
+                                        setNotificationOpen(false)
+                                    }
+                                    onUnreadChange={
+                                        setUnreadCount
+                                    }
+                                />
+                            )}
+                        </div>
+                    )}
 
                     {user && (
                         <div className="mobile-user-info">

@@ -1,4 +1,5 @@
 import Project from "../models/Project.js";
+import createActivity from "../utils/activityUtils.js";
 
 
 // ==========================================
@@ -26,6 +27,16 @@ export const createProject = async (req, res, next) => {
             description: description?.trim() || "",
             organizationId: req.organizationId,
             createdBy: req.user._id,
+        });
+
+        // Create activity log
+        await createActivity({
+            organizationId: req.organizationId,
+            user: req.user._id,
+            action: "created",
+            entityType: "project",
+            entityId: project._id,
+            description: `Created project "${project.name}"`,
         });
 
         return res.status(201).json({
@@ -141,6 +152,16 @@ export const updateProject = async (req, res, next) => {
 
         await project.save();
 
+        // Create activity log
+        await createActivity({
+            organizationId: req.organizationId,
+            user: req.user._id,
+            action: "updated",
+            entityType: "project",
+            entityId: project._id,
+            description: `Updated project "${project.name}"`,
+        });
+
         return res.status(200).json({
             success: true,
             message: "Project updated successfully",
@@ -171,7 +192,21 @@ export const deleteProject = async (req, res, next) => {
             });
         }
 
+        // Store project name before deletion
+        const projectName = project.name;
+        const projectId = project._id;
+
         await project.deleteOne();
+
+        // Create activity log
+        await createActivity({
+            organizationId: req.organizationId,
+            user: req.user._id,
+            action: "deleted",
+            entityType: "project",
+            entityId: projectId,
+            description: `Deleted project "${projectName}"`,
+        });
 
         return res.status(200).json({
             success: true,

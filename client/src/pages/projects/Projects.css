@@ -1,499 +1,1398 @@
+/* =========================================================
+   SAASFLOW — PROJECTS PAGE
+   Professional Dark SaaS UI
+   ========================================================= */
+
+
+/* =========================================================
+   PAGE
+   ========================================================= */
+
 .projects-page {
-    min-height: 100vh;
-    padding: 40px;
+    min-height: calc(100vh - 70px);
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 42px;
+
+    background:
+        radial-gradient(circle at 10% 0%,
+            rgba(124, 58, 237, 0.08),
+            transparent 28%),
+        radial-gradient(circle at 90% 100%,
+            rgba(59, 130, 246, 0.05),
+            transparent 30%),
+        #0b0b10;
+
+    color: #f8fafc;
+
+    font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
 }
+
+
+/* =========================================================
+   GLOBAL TEXT
+   ========================================================= */
+
+.projects-page h1,
+.projects-page h2,
+.projects-page h3,
+.projects-page p,
+.projects-page span,
+.projects-page strong,
+.projects-page label {
+    color: inherit;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
 
 .projects-header {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
+
     gap: 30px;
-    margin-bottom: 35px;
+
+    margin-bottom: 34px;
 }
+
 
 .projects-header h1 {
-    margin: 0;
-    font-size: 42px;
+    margin: 0 0 8px;
+
+    color: #f8fafc !important;
+
+    font-size: clamp(32px, 3vw, 44px);
+
+    line-height: 1.1;
+
+    font-weight: 750;
+
+    letter-spacing: -1px;
 }
 
-.projects-header p {
-    margin-top: 8px;
-    font-size: 16px;
-    opacity: 0.7;
+
+.projects-header>div:first-child>p {
+    margin: 0;
+
+    color: #8b91a1 !important;
+
+    font-size: 15px;
+
+    line-height: 1.5;
 }
+
+
+/* Project Management */
+
+.projects-header>div:first-child>p:first-child {
+    color: #a78bfa !important;
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+    letter-spacing: 0.12em;
+
+    text-transform: uppercase;
+}
+
+
+/* =========================================================
+   HEADER ACTIONS
+   ========================================================= */
 
 .projects-header-actions {
     display: flex;
+
     align-items: center;
-    gap: 18px;
+
+    gap: 14px;
+
+    flex-shrink: 0;
 }
 
+
+/* =========================================================
+   PROJECT COUNT
+   ========================================================= */
+
 .projects-count {
-    min-width: 120px;
-    padding: 18px 25px;
-    border: 1px solid #333;
-    border-radius: 12px;
-    background: #1b1b1f;
+    min-width: 125px;
+
+    padding: 15px 22px;
+
+    box-sizing: border-box;
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    border-radius: 14px;
+
+    background:
+        linear-gradient(145deg,
+            rgba(27, 27, 34, 0.98),
+            rgba(19, 19, 25, 0.98));
+
     text-align: center;
+
+    box-shadow:
+        0 12px 30px rgba(0, 0, 0, 0.20);
 }
+
 
 .projects-count span {
     display: block;
-    font-size: 14px;
-    opacity: 0.65;
+
+    margin-bottom: 5px;
+
+    color: #858b9a !important;
+
+    font-size: 12px;
 }
+
 
 .projects-count strong {
     display: block;
-    margin-top: 8px;
-    font-size: 30px;
-}
 
-.add-project-button {
-    padding: 14px 22px;
-    border: none;
-    border-radius: 10px;
-    background: #ffffff;
-    color: #111;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-}
+    color: #f8fafc !important;
 
-.add-project-button:hover {
-    opacity: 0.9;
-}
+    font-size: 27px;
 
-.projects-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-}
-
-.project-card {
-    padding: 25px;
-    border: 1px solid #333;
-    border-radius: 12px;
-    background: #1b1b1f;
-}
-
-.project-card-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 15px;
-}
-
-.project-card-header h2 {
-    margin: 0;
-    font-size: 22px;
-}
-
-.project-status {
-    padding: 6px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: capitalize;
-}
-
-.status-active {
-    background: #173c29;
-    color: #55e69a;
-}
-
-.status-completed {
-    background: #183653;
-    color: #65b5ff;
-}
-
-.status-archived {
-    background: #3a3a3f;
-    color: #aaa;
-}
-
-.project-description {
-    min-height: 55px;
-    margin: 20px 0;
-    line-height: 1.6;
-    opacity: 0.7;
-}
-
-.project-card-footer {
-    padding-top: 15px;
-    border-top: 1px solid #333;
-    font-size: 13px;
-    opacity: 0.6;
-}
-
-.empty-projects {
-    padding: 60px 20px;
-    border: 1px dashed #333;
-    border-radius: 12px;
-    text-align: center;
-}
-
-.empty-projects h3 {
-    margin-bottom: 8px;
-}
-
-.empty-projects p {
-    margin: 0;
-    opacity: 0.65;
-}
-
-.projects-message {
-    min-height: 60vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-}
-
-.projects-error {
-    color: #ff6b6b;
-}
-
-/* ==========================================
-   PROJECT MODAL
-========================================== */
-
-.project-modal-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 1000;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 20px;
-
-    background: rgba(0, 0, 0, 0.75);
-}
-
-.project-modal {
-    width: min(600px, 100%);
-
-    padding: 32px;
-
-    border: 1px solid #333;
-    border-radius: 16px;
-
-    background: #1b1b1f;
-
-    box-sizing: border-box;
-}
-
-.project-modal-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 20px;
-
-    margin-bottom: 30px;
-}
-
-.project-modal-header h2 {
-    margin: 0;
-    font-size: 28px;
-}
-
-.project-modal-header p {
-    margin: 8px 0 0;
-    font-size: 16px;
-    opacity: 0.65;
-}
-
-.close-project-modal-button {
-    border: none;
-    background: transparent;
-
-    color: #aaa;
-
-    font-size: 32px;
     line-height: 1;
 
-    cursor: pointer;
+    font-weight: 750;
 }
 
-.close-project-modal-button:hover {
-    color: #fff;
-}
 
-.project-form {
-    display: flex;
-    flex-direction: column;
-    gap: 22px;
-}
+/* =========================================================
+   ADD PROJECT BUTTON
+   ========================================================= */
 
-.project-form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
+.add-project-button {
+    display: inline-flex;
 
-.project-form-group label {
-    font-size: 15px;
-    font-weight: 600;
-}
+    align-items: center;
+    justify-content: center;
 
-.project-form-group input,
-.project-form-group textarea {
-    width: 100%;
+    min-height: 48px;
 
-    padding: 14px 16px;
+    padding: 0 19px;
 
-    border: 1px solid #444;
+    border: 1px solid rgba(139, 92, 246, 0.35);
+
     border-radius: 10px;
 
-    background: #121216;
-    color: #fff;
+    background:
+        linear-gradient(135deg,
+            #7c3aed,
+            #6366f1);
 
-    font-size: 16px;
+    color: #ffffff !important;
 
+    font-size: 14px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 8px 25px rgba(124, 58, 237, 0.22);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        filter 0.2s ease;
+}
+
+
+.add-project-button:hover {
+    transform: translateY(-2px);
+
+    filter: brightness(1.08);
+
+    box-shadow:
+        0 12px 32px rgba(124, 58, 237, 0.30);
+}
+
+
+.add-project-button:active {
+    transform: translateY(0);
+}
+
+
+/* =========================================================
+   MEMBER INFORMATION
+   ========================================================= */
+
+.projects-page>div[style] {
     box-sizing: border-box;
+
+    border: 1px solid rgba(139, 92, 246, 0.15) !important;
+
+    border-radius: 10px !important;
+
+    background:
+        rgba(139, 92, 246, 0.06) !important;
+
+    color: #aaa6bb !important;
+
+    opacity: 1 !important;
+}
+
+
+/* =========================================================
+   SEARCH / FILTER / SORT
+   ========================================================= */
+
+.projects-page>div[style*="padding: 18px"] {
+    box-sizing: border-box;
+
+    border: 1px solid rgba(255, 255, 255, 0.07) !important;
+
+    border-radius: 14px !important;
+
+    background:
+        linear-gradient(145deg,
+            rgba(27, 27, 34, 0.96),
+            rgba(19, 19, 25, 0.96)) !important;
+
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.18);
+}
+
+
+/* Search input */
+
+.projects-page>div[style*="padding: 18px"] input {
+    border: 1px solid rgba(255, 255, 255, 0.09) !important;
+
+    background: #111117 !important;
+
+    color: #f3f4f6 !important;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+
+.projects-page>div[style*="padding: 18px"] input::placeholder {
+    color: #5f6470;
+}
+
+
+.projects-page>div[style*="padding: 18px"] input:focus {
+    border-color: rgba(139, 92, 246, 0.55) !important;
+
+    background: #14141b !important;
+
+    box-shadow:
+        0 0 0 3px rgba(139, 92, 246, 0.10);
+
     outline: none;
 }
 
-.project-form-group input:focus,
-.project-form-group textarea:focus {
-    border-color: #888;
+
+/* Filter / Sort selects */
+
+.projects-page>div[style*="padding: 18px"] select {
+    border: 1px solid rgba(255, 255, 255, 0.09) !important;
+
+    background: #111117 !important;
+
+    color: #f3f4f6 !important;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
 }
 
-.project-form-group textarea {
-    resize: vertical;
-    min-height: 120px;
-    font-family: inherit;
+
+.projects-page>div[style*="padding: 18px"] select:focus {
+    border-color: rgba(139, 92, 246, 0.55) !important;
+
+    background: #14141b !important;
+
+    box-shadow:
+        0 0 0 3px rgba(139, 92, 246, 0.10);
+
+    outline: none;
 }
+
+
+.projects-page>div[style*="padding: 18px"] option {
+    background: #18181f;
+
+    color: #f8fafc;
+}
+
+
+/* Clear Filters */
+
+.projects-page>div[style*="padding: 18px"] button {
+    font-family: inherit;
+
+    font-size: 13px;
+
+    font-weight: 650;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.projects-page>div[style*="padding: 18px"] button:not(:disabled):hover {
+    background: rgba(139, 92, 246, 0.14) !important;
+
+    border-color: rgba(139, 92, 246, 0.30) !important;
+
+    transform: translateY(-1px);
+}
+
+
+.projects-page>div[style*="padding: 18px"] button:disabled {
+    cursor: not-allowed;
+}
+
+
+/* Results information */
+
+.projects-page>div[style*="padding: 18px"] strong {
+    color: #c4b5fd !important;
+}
+
+
+/* =========================================================
+   PROJECT GRID
+   ========================================================= */
+
+.projects-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 20px;
+
+    width: 100%;
+}
+
+
+/* =========================================================
+   PROJECT CARD
+   ========================================================= */
+
+.project-card {
+    min-width: 0;
+
+    min-height: 225px;
+
+    padding: 25px;
+
+    box-sizing: border-box;
+
+    display: flex;
+
+    flex-direction: column;
+
+    border: 1px solid rgba(255, 255, 255, 0.075);
+
+    border-radius: 17px;
+
+    background:
+        linear-gradient(145deg,
+            rgba(27, 27, 34, 0.98),
+            rgba(19, 19, 25, 0.98));
+
+    box-shadow:
+        0 12px 35px rgba(0, 0, 0, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.025);
+
+    transition:
+        transform 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+
+.project-card:hover {
+    transform: translateY(-4px);
+
+    border-color: rgba(139, 92, 246, 0.24);
+
+    box-shadow:
+        0 20px 45px rgba(0, 0, 0, 0.30),
+        0 0 0 1px rgba(139, 92, 246, 0.04);
+}
+
+
+/* =========================================================
+   PROJECT CARD HEADER
+   ========================================================= */
+
+.project-card-header {
+    display: flex;
+
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 15px;
+}
+
+
+.project-card-header h2 {
+    margin: 0;
+
+    min-width: 0;
+
+    color: #f4f5f7 !important;
+
+    font-size: 20px;
+
+    line-height: 1.35;
+
+    font-weight: 700;
+
+    word-break: break-word;
+}
+
+
+/* =========================================================
+   PROJECT STATUS
+   ========================================================= */
+
+.project-status {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    padding: 6px 10px;
+
+    border-radius: 999px;
+
+    font-size: 11px;
+
+    font-weight: 750;
+
+    text-transform: capitalize;
+}
+
+
+.status-active {
+    color: #6ee7b7 !important;
+
+    background: rgba(16, 185, 129, 0.12);
+
+    border: 1px solid rgba(16, 185, 129, 0.18);
+}
+
+
+.status-completed {
+    color: #a5b4fc !important;
+
+    background: rgba(99, 102, 241, 0.12);
+
+    border: 1px solid rgba(99, 102, 241, 0.18);
+}
+
+
+.status-archived {
+    color: #a1a1aa !important;
+
+    background: rgba(161, 161, 170, 0.10);
+
+    border: 1px solid rgba(161, 161, 170, 0.15);
+}
+
+
+/* =========================================================
+   DESCRIPTION
+   ========================================================= */
+
+.project-description {
+    margin: 18px 0 25px;
+
+    min-height: 48px;
+
+    color: #858b9a !important;
+
+    font-size: 14px;
+
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   PROJECT FOOTER
+   ========================================================= */
+
+.project-card-footer {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-top: auto;
+
+    padding-top: 17px;
+
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+
+.project-card-footer>span {
+    color: #666c7a !important;
+
+    font-size: 12px;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   EDIT BUTTON
+   ========================================================= */
+
+.edit-project-button {
+    padding: 8px 13px;
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    border-radius: 8px;
+
+    background: rgba(255, 255, 255, 0.06);
+
+    color: #d5d8df !important;
+
+    font-size: 12px;
+
+    font-weight: 650;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+.edit-project-button:hover {
+    background: rgba(139, 92, 246, 0.14);
+
+    border-color: rgba(139, 92, 246, 0.25);
+
+    color: #c4b5fd !important;
+}
+
+
+/* =========================================================
+   DELETE BUTTON
+   ========================================================= */
+
+.delete-project-button {
+    padding: 8px 13px;
+
+    border: 1px solid rgba(239, 68, 68, 0.16);
+
+    border-radius: 8px;
+
+    background: rgba(239, 68, 68, 0.10);
+
+    color: #fca5a5 !important;
+
+    font-size: 12px;
+
+    font-weight: 650;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+.delete-project-button:hover {
+    background: rgba(239, 68, 68, 0.18);
+
+    border-color: rgba(239, 68, 68, 0.28);
+}
+
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+.empty-projects {
+    padding: 60px 30px;
+
+    margin-top: 20px;
+
+    border: 1px dashed rgba(255, 255, 255, 0.10);
+
+    border-radius: 16px;
+
+    background: rgba(255, 255, 255, 0.025);
+
+    text-align: center;
+}
+
+
+.empty-projects h3 {
+    margin: 0 0 8px;
+
+    color: #e5e7eb !important;
+
+    font-size: 20px;
+}
+
+
+.empty-projects p {
+    margin: 0;
+
+    color: #737987 !important;
+
+    font-size: 14px;
+}
+
+
+/* Empty state button */
+
+.empty-projects button {
+    border: 1px solid rgba(139, 92, 246, 0.25) !important;
+
+    background: rgba(139, 92, 246, 0.10) !important;
+
+    color: #c4b5fd !important;
+
+    font-family: inherit;
+
+    font-weight: 650;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.empty-projects button:hover {
+    background: rgba(139, 92, 246, 0.18) !important;
+
+    border-color: rgba(139, 92, 246, 0.35) !important;
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   LOADING / ERROR
+   ========================================================= */
+
+.projects-message {
+    min-height: calc(100vh - 70px);
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 30px;
+
+    box-sizing: border-box;
+
+    background:
+        radial-gradient(circle at 50% 40%,
+            rgba(124, 58, 237, 0.08),
+            transparent 35%),
+        #0b0b10;
+
+    color: #f8fafc;
+
+    text-align: center;
+}
+
+
+.projects-message>div,
+.projects-message {
+    color: #f8fafc;
+}
+
+
+.projects-message h2 {
+    color: #f8fafc !important;
+
+    font-size: 23px;
+}
+
+
+.projects-error {
+    color: #fca5a5 !important;
+}
+
+
+/* =========================================================
+   MODAL OVERLAY
+   ========================================================= */
+
+.project-modal-overlay {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 9999;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 25px;
+
+    box-sizing: border-box;
+
+    background: rgba(3, 3, 7, 0.78);
+
+    backdrop-filter: blur(8px);
+
+    -webkit-backdrop-filter: blur(8px);
+
+    overflow-y: auto;
+}
+
+
+/* =========================================================
+   PROJECT MODAL
+   ========================================================= */
+
+.project-modal {
+    width: min(560px, 100%);
+
+    max-height: calc(100vh - 50px);
+
+    overflow-y: auto;
+
+    padding: 28px;
+
+    box-sizing: border-box;
+
+    border: 1px solid rgba(255, 255, 255, 0.09);
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(145deg,
+            #1b1b22,
+            #121218);
+
+    box-shadow:
+        0 30px 90px rgba(0, 0, 0, 0.55);
+
+    color: #f8fafc;
+}
+
+
+/* =========================================================
+   MODAL HEADER
+   ========================================================= */
+
+.project-modal-header {
+    display: flex;
+
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-bottom: 25px;
+
+    padding-bottom: 20px;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+
+.project-modal-header h2 {
+    margin: 0 0 7px;
+
+    color: #f8fafc !important;
+
+    font-size: 23px;
+
+    font-weight: 700;
+}
+
+
+.project-modal-header p {
+    margin: 0;
+
+    color: #7e8492 !important;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   CLOSE BUTTON
+   ========================================================= */
+
+.close-project-modal-button {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 36px;
+    height: 36px;
+
+    flex-shrink: 0;
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    border-radius: 9px;
+
+    background: rgba(255, 255, 255, 0.05);
+
+    color: #9ca3af !important;
+
+    font-size: 23px;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+
+.close-project-modal-button:hover {
+    background: rgba(239, 68, 68, 0.10);
+
+    color: #fca5a5 !important;
+}
+
+
+/* =========================================================
+   FORM
+   ========================================================= */
+
+.project-form {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 18px;
+}
+
+
+.project-form-group {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+
+.project-form-group label {
+    color: #c5c9d2 !important;
+
+    font-size: 13px;
+
+    font-weight: 650;
+}
+
+
+.project-form-group input,
+.project-form-group textarea,
+.project-form-group select {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 12px 14px;
+
+    border: 1px solid rgba(255, 255, 255, 0.09);
+
+    border-radius: 9px;
+
+    outline: none;
+
+    background: #111117;
+
+    color: #f3f4f6 !important;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
 
 .project-form-group input::placeholder,
 .project-form-group textarea::placeholder {
-    color: #777;
+    color: #5f6470;
 }
 
-.project-form-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
 
-    margin-top: 8px;
+.project-form-group input:focus,
+.project-form-group textarea:focus,
+.project-form-group select:focus {
+    border-color: rgba(139, 92, 246, 0.55);
+
+    background: #14141b;
+
+    box-shadow:
+        0 0 0 3px rgba(139, 92, 246, 0.10);
 }
 
-.cancel-project-button,
-.create-project-button {
-    padding: 12px 20px;
 
-    border: none;
-    border-radius: 9px;
+.project-form-group textarea {
+    min-height: 120px;
 
-    font-size: 15px;
-    font-weight: 600;
+    resize: vertical;
 
+    line-height: 1.6;
+}
+
+
+.project-form-group select {
     cursor: pointer;
 }
 
-.cancel-project-button {
-    background: #292930;
-    color: #aaa;
+
+.project-form-group option {
+    background: #18181f;
+
+    color: #f8fafc;
 }
 
-.cancel-project-button:hover {
-    background: #33333b;
-}
 
-.create-project-button {
-    background: #ffffff;
-    color: #111;
-}
-
-.create-project-button:hover {
-    opacity: 0.9;
-}
-
-.cancel-project-button:disabled,
-.create-project-button:disabled,
-.close-project-modal-button:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-}
+/* =========================================================
+   FORM MESSAGES
+   ========================================================= */
 
 .form-error {
     margin: 0;
-    color: #ff6b6b;
-    font-size: 14px;
+
+    padding: 10px 12px;
+
+    border: 1px solid rgba(239, 68, 68, 0.16);
+
+    border-radius: 8px;
+
+    background: rgba(239, 68, 68, 0.07);
+
+    color: #fca5a5 !important;
+
+    font-size: 13px;
+
+    line-height: 1.5;
 }
+
 
 .form-success {
     margin: 0;
-    color: #55e69a;
-    font-size: 14px;
+
+    padding: 10px 12px;
+
+    border: 1px solid rgba(16, 185, 129, 0.16);
+
+    border-radius: 8px;
+
+    background: rgba(16, 185, 129, 0.07);
+
+    color: #6ee7b7 !important;
+
+    font-size: 13px;
+
+    line-height: 1.5;
 }
 
-/* ==========================================
-   RESPONSIVE
-========================================== */
 
-@media (max-width: 1000px) {
+/* =========================================================
+   FORM ACTIONS
+   ========================================================= */
+
+.project-form-actions {
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    margin-top: 5px;
+}
+
+
+.cancel-project-button,
+.create-project-button,
+.confirm-delete-project-button {
+    padding: 11px 17px;
+
+    border-radius: 9px;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        opacity 0.2s ease;
+}
+
+
+.cancel-project-button {
+    border: 1px solid rgba(255, 255, 255, 0.09);
+
+    background: rgba(255, 255, 255, 0.05);
+
+    color: #c5c9d2 !important;
+}
+
+
+.cancel-project-button:hover {
+    background: rgba(255, 255, 255, 0.09);
+}
+
+
+.create-project-button {
+    border: 1px solid rgba(139, 92, 246, 0.30);
+
+    background:
+        linear-gradient(135deg,
+            #7c3aed,
+            #6366f1);
+
+    color: #ffffff !important;
+
+    box-shadow:
+        0 7px 20px rgba(124, 58, 237, 0.20);
+}
+
+
+.create-project-button:hover {
+    transform: translateY(-1px);
+}
+
+
+.confirm-delete-project-button {
+    border: 1px solid rgba(239, 68, 68, 0.25);
+
+    background: rgba(239, 68, 68, 0.13);
+
+    color: #fca5a5 !important;
+}
+
+
+.confirm-delete-project-button:hover {
+    background: rgba(239, 68, 68, 0.20);
+}
+
+
+/* =========================================================
+   DELETE MODAL
+   ========================================================= */
+
+.project-delete-modal {
+    width: min(430px, 100%);
+
+    padding: 32px;
+
+    box-sizing: border-box;
+
+    border: 1px solid rgba(239, 68, 68, 0.12);
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(145deg,
+            #1b1b22,
+            #121218);
+
+    box-shadow:
+        0 30px 90px rgba(0, 0, 0, 0.55);
+
+    text-align: center;
+}
+
+
+.project-delete-icon {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 55px;
+    height: 55px;
+
+    margin: 0 auto 17px;
+
+    border-radius: 50%;
+
+    background: rgba(239, 68, 68, 0.10);
+
+    border: 1px solid rgba(239, 68, 68, 0.16);
+
+    font-size: 23px;
+}
+
+
+.project-delete-modal h2 {
+    margin: 0 0 10px;
+
+    color: #f8fafc !important;
+
+    font-size: 22px;
+}
+
+
+.project-delete-modal>p {
+    margin: 0 0 10px;
+
+    color: #9ca3af !important;
+
+    font-size: 14px;
+
+    line-height: 1.6;
+}
+
+
+.project-delete-modal>p strong {
+    color: #e5e7eb !important;
+}
+
+
+.delete-warning {
+    color: #fca5a5 !important;
+
+    font-size: 13px !important;
+}
+
+
+/* =========================================================
+   DISABLED
+   ========================================================= */
+
+.projects-page button:disabled,
+.project-modal button:disabled,
+.project-modal input:disabled,
+.project-modal textarea:disabled,
+.project-modal select:disabled {
+    opacity: 0.55;
+
+    cursor: not-allowed;
+
+    transform: none;
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1100px) {
+
+    .projects-page {
+        padding: 32px;
+    }
+
+
     .projects-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+
+    /* Search / Filter / Sort */
+
+    .projects-page>div[style*="padding: 18px"]>div:first-child {
+        grid-template-columns:
+            minmax(180px, 1fr) 160px 160px auto !important;
     }
 }
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
 
 @media (max-width: 700px) {
+
     .projects-page {
-        padding: 25px;
+        padding: 24px 18px;
     }
+
 
     .projects-header {
         flex-direction: column;
-        align-items: flex-start;
+
+        gap: 22px;
     }
 
-    .projects-header h1 {
-        font-size: 32px;
-    }
 
     .projects-header-actions {
         width: 100%;
+    }
+
+
+    .projects-count {
+        flex: 1;
+    }
+
+
+    .add-project-button {
+        flex: 1;
+
+        min-height: 50px;
+    }
+
+
+    /* Search / Filter / Sort */
+
+    .projects-page>div[style*="padding: 18px"]>div:first-child {
+        grid-template-columns: 1fr !important;
+    }
+
+
+    .projects-page>div[style*="padding: 18px"] input,
+    .projects-page>div[style*="padding: 18px"] select,
+    .projects-page>div[style*="padding: 18px"] button {
+        width: 100% !important;
+    }
+
+
+    .projects-grid {
+        grid-template-columns: 1fr;
+
+        gap: 15px;
+    }
+
+
+    .project-card {
+        padding: 21px;
+    }
+
+
+    .project-modal-overlay {
+        align-items: flex-start;
+
+        padding: 15px;
+    }
+
+
+    .project-modal {
+        margin: auto 0;
+
+        padding: 22px;
+
+        max-height: calc(100vh - 30px);
+    }
+
+
+    .project-delete-modal {
+        padding: 25px 20px;
+    }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 480px) {
+
+    .projects-page {
+        padding: 18px 13px;
+    }
+
+
+    .projects-header h1 {
+        font-size: 31px;
+    }
+
+
+    .projects-header-actions {
         flex-direction: column;
+
         align-items: stretch;
     }
 
-    .projects-count {
-        width: 100%;
-        box-sizing: border-box;
-    }
 
+    .projects-count,
     .add-project-button {
         width: 100%;
     }
 
-    .projects-grid {
-        grid-template-columns: 1fr;
+
+    .project-card-header {
+        flex-direction: column;
     }
 
-    .project-modal {
-        padding: 24px;
+
+    .project-card-footer {
+        align-items: flex-start;
+
+        flex-direction: column;
     }
-}
-
-.project-card-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 15px;
-}
-
-.edit-project-button {
-    padding: 7px 14px;
-    border: none;
-    border-radius: 7px;
-    background: #292930;
-    color: inherit;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    opacity: 1;
-}
-
-.edit-project-button:hover {
-    opacity: 0.8;
-}
-
-.project-form-group select {
-    width: 100%;
-    padding: 14px 16px;
-    border: 1px solid #444;
-    border-radius: 10px;
-    background: #121216;
-    color: #fff;
-    font-size: 16px;
-    box-sizing: border-box;
-    outline: none;
-}
-
-.project-form-group select:focus {
-    border-color: #888;
-}
-
-/* ==========================================
-   DELETE PROJECT BUTTON
-========================================== */
-
-.delete-project-button {
-    padding: 7px 14px;
-    border: none;
-    border-radius: 7px;
-    background: #3a2020;
-    color: #ff8f8f;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.delete-project-button:hover {
-    background: #512626;
-}
 
 
-/* ==========================================
-   DELETE CONFIRMATION MODAL
-========================================== */
-
-.project-delete-modal {
-    width: min(450px, calc(100% - 40px));
-    background: #18181d;
-    border: 1px solid #333;
-    border-radius: 14px;
-    padding: 30px;
-    box-sizing: border-box;
-    text-align: center;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-}
-
-.project-delete-modal h2 {
-    margin: 10px 0;
-    font-size: 24px;
-}
-
-.project-delete-modal p {
-    margin: 10px 0;
-    line-height: 1.6;
-    opacity: 0.8;
-}
-
-.project-delete-icon {
-    font-size: 42px;
-    margin-bottom: 5px;
-}
-
-.delete-warning {
-    font-size: 13px;
-    opacity: 0.6 !important;
-}
+    .project-card-footer>div {
+        width: 100%;
+    }
 
 
-/* ==========================================
-   CONFIRM DELETE BUTTON
-========================================== */
+    .project-card-footer button {
+        flex: 1;
+    }
 
-.confirm-delete-project-button {
-    padding: 12px 20px;
-    border: none;
-    border-radius: 8px;
-    background: #b42323;
-    color: white;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-}
 
-.confirm-delete-project-button:hover {
-    background: #d12d2d;
-}
+    .project-form-actions {
+        flex-direction: column-reverse;
+    }
 
-.confirm-delete-project-button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+
+    .project-form-actions button {
+        width: 100%;
+    }
 }

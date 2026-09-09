@@ -9,6 +9,8 @@ import userRoutes from "./routes/userRoutes.js";
 import taskRoutes from "./routes/taskRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
 import errorMiddleware from "./middleware/errorMiddleware.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
+import activityRoutes from "./routes/activityRoutes.js";
 
 const app = express();
 
@@ -53,6 +55,9 @@ app.use("/api/projects", projectRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/activities", activityRoutes);
+
 app.use(errorMiddleware);
 
 app.get("/", (req, res) => {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../services/api.js";
+import ActivityPanel from "../../components/common/ActivityPanel.jsx";
 import "./Dashboard.css";
-
 
 // ==========================================
 // DASHBOARD PAGE
@@ -705,6 +705,33 @@ const Dashboard = () => {
                     </div>
 
                 </div>
+
+            </section>
+
+
+            {/* ==================================
+                ACTIVITY LOG
+            ================================== */}
+
+            <section className="dashboard-section">
+
+                <div className="section-heading">
+
+                    <div>
+
+                        <p className="section-eyebrow">
+                            Organization Activity
+                        </p>
+
+                        <h2>
+                            Recent Activity
+                        </h2>
+
+                    </div>
+
+                </div>
+
+                <ActivityPanel />
 
             </section>
 

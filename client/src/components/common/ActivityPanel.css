@@ -1,0 +1,166 @@
+.activity-panel {
+    width: 100%;
+    background: #111827;
+    border: 1px solid #1f2937;
+    border-radius: 16px;
+    padding: 24px;
+    color: #f9fafb;
+}
+
+.activity-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 22px;
+}
+
+.activity-header h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.activity-header p {
+    margin: 6px 0 0;
+    color: #9ca3af;
+    font-size: 14px;
+}
+
+.activity-refresh {
+    width: 38px;
+    height: 38px;
+    border: 1px solid #374151;
+    border-radius: 10px;
+    background: #1f2937;
+    color: #f9fafb;
+    font-size: 20px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.activity-refresh:hover {
+    background: #374151;
+    transform: rotate(30deg);
+}
+
+.activity-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.activity-item {
+    display: flex;
+    gap: 14px;
+    padding: 16px 0;
+    border-bottom: 1px solid #1f2937;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-icon {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #1f2937;
+    border-radius: 12px;
+    font-size: 18px;
+}
+
+.activity-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.activity-description {
+    margin: 0 0 8px;
+    color: #e5e7eb;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.activity-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    color: #9ca3af;
+    font-size: 12px;
+}
+
+.activity-state {
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #9ca3af;
+}
+
+.activity-state.error {
+    gap: 12px;
+}
+
+.activity-state.error span {
+    color: #f87171;
+}
+
+.activity-state button {
+    padding: 8px 16px;
+    border: 1px solid #374151;
+    border-radius: 8px;
+    background: #1f2937;
+    color: #f9fafb;
+    cursor: pointer;
+}
+
+.activity-state button:hover {
+    background: #374151;
+}
+
+.activity-empty-icon {
+    font-size: 38px;
+    margin-bottom: 10px;
+}
+
+.activity-state h3 {
+    margin: 0 0 6px;
+    color: #e5e7eb;
+    font-size: 16px;
+}
+
+.activity-state p {
+    margin: 0;
+    font-size: 13px;
+}
+
+@media (max-width: 600px) {
+    .activity-panel {
+        padding: 18px;
+        border-radius: 12px;
+    }
+
+    .activity-header h2 {
+        font-size: 18px;
+    }
+
+    .activity-item {
+        gap: 10px;
+    }
+
+    .activity-icon {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        font-size: 16px;
+    }
+
+    .activity-meta {
+        flex-direction: column;
+        gap: 4px;
+    }
+}
